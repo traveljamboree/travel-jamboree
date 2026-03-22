@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Manager — Travel Jamboree</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background: #f0f2f5; }
+
+        /* Nav */
+        nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 30px; background: #1a1a2e; color: white; }
+        nav .brand { font-size: 1.3em; font-weight: 700; }
+        nav .brand span { opacity: 0.7; font-weight: 400; font-size: 0.8em; margin-left: 10px; }
+        nav .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; margin-left: 25px; font-size: 0.95em; }
+        nav .nav-links a:hover { color: white; }
+        nav .nav-links a.active { color: white; border-bottom: 2px solid #4ecdc4; padding-bottom: 2px; }
+
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+        .grid { display: grid; grid-template-columns: 300px 1fr; gap: 25px; }
+
+        /* Sidebar */
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .card h3 { font-size: 1em; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+
+        /* Account Card */
+        .account-connected { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .account-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #fe2c55, #25f4ee); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2em; }
+        .account-info .account-name { font-weight: 600; font-size: 1.05em; }
+        .account-info .account-handle { color: #888; font-size: 0.9em; }
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 500; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; }
+        .account-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .stat { text-align: center; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+        .stat .num { font-size: 1.3em; font-weight: 700; color: #1a1a2e; }
+        .stat .label { font-size: 0.75em; color: #888; text-transform: uppercase; margin-top: 2px; }
+
+        /* Quick Actions */
+        .actions { display: flex; flex-direction: column; gap: 8px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-size: 0.95em; cursor: pointer; font-weight: 500; transition: all 0.2s; text-align: left; display: flex; align-items: center; gap: 10px; }
+        .btn-primary { background: linear-gradient(135deg, #fe2c55, #d62848); color: white; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(254,44,85,0.3); }
+        .btn-secondary { background: #f0f2f5; color: #333; }
+        .btn-secondary:hover { background: #e4e6e9; }
+        .btn-icon { font-size: 1.1em; width: 24px; text-align: center; }
+
+        /* Main Content */
+        .main { display: flex; flex-direction: column; gap: 20px; }
+
+        /* Upload Section */
+        .upload-zone { border: 2px dashed #ccc; border-radius: 12px; padding: 40px; text-align: center; background: white; transition: all 0.2s; cursor: pointer; }
+        .upload-zone:hover { border-color: #fe2c55; background: #fff5f7; }
+        .upload-icon { font-size: 2.5em; margin-bottom: 10px; }
+        .upload-title { font-size: 1.1em; font-weight: 600; margin-bottom: 5px; }
+        .upload-hint { color: #888; font-size: 0.9em; }
+        .upload-form { display: none; margin-top: 20px; text-align: left; }
+        .upload-form.visible { display: block; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 0.9em; color: #555; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95em; font-family: inherit; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-upload { width: 100%; justify-content: center; padding: 14px; font-size: 1em; }
+        .file-selected { display: flex; align-items: center; gap: 10px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-top: 10px; }
+        .file-selected .file-icon { font-size: 1.5em; }
+        .file-selected .file-name { font-weight: 500; }
+        .file-selected .file-size { color: #888; font-size: 0.85em; }
+
+        /* Video List */
+        .video-list-header { display: flex; justify-content: space-between; align-items: center; }
+        .video-list-header h2 { font-size: 1.2em; }
+        .filter-tabs { display: flex; gap: 5px; }
+        .filter-tab { padding: 6px 14px; border-radius: 20px; border: none; background: #e4e6e9; font-size: 0.85em; cursor: pointer; }
+        .filter-tab.active { background: #1a1a2e; color: white; }
+
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .video-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .video-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .video-thumb { position: relative; padding-top: 56.25%; background: #e0e0e0; }
+        .video-thumb .duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.75); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; }
+        .video-thumb .thumb-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.5em; }
+        .thumb-bali { background: linear-gradient(135deg, #43cea2, #185a9d); }
+        .thumb-kyoto { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .thumb-swiss { background: linear-gradient(135deg, #a8e6cf, #3d5a80); }
+        .thumb-iceland { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .thumb-morocco { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .thumb-nz { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .video-details { padding: 14px; }
+        .video-title { font-weight: 600; font-size: 0.95em; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .video-meta { color: #888; font-size: 0.8em; }
+        .video-stats { display: flex; gap: 12px; margin-top: 8px; color: #666; font-size: 0.8em; }
+        .video-stats span { display: flex; align-items: center; gap: 3px; }
+        .video-status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 500; margin-top: 6px; }
+        .status-published { background: #e8f5e9; color: #2e7d32; }
+        .status-scheduled { background: #fff3e0; color: #e65100; }
+        .status-draft { background: #e3f2fd; color: #1565c0; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .video-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="brand">Travel Jamboree <span>Content Manager</span></div>
+        <div class="nav-links">
+            <a href="/travel-jamboree/">Home</a>
+            <a href="/travel-jamboree/dashboard" class="active">Dashboard</a>
+            <a href="/travel-jamboree/terms">Terms</a>
+            <a href="/travel-jamboree/privacy">Privacy</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- TikTok Account -->
+                <div class="card">
+                    <h3>TikTok Account</h3>
+                    <div class="account-connected">
+                        <div class="account-avatar">TJ</div>
+                        <div class="account-info">
+                            <div class="account-name">Travel Jamboree</div>
+                            <div class="account-handle">@traveljamboree</div>
+                        </div>
+                    </div>
+                    <div class="status-badge"><span class="status-dot"></span> Connected</div>
+                    <div class="account-stats">
+                        <div class="stat">
+                            <div class="num">24</div>
+                            <div class="label">Videos</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num">1.2K</div>
+                            <div class="label">Followers</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num">8.4K</div>
+                            <div class="label">Likes</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num">45K</div>
+                            <div class="label">Views</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="showUpload()">
+                            <span class="btn-icon">+</span> Upload New Video
+                        </button>
+                        <button class="btn btn-secondary">
+                            <span class="btn-icon">&#x1f4ca;</span> View Analytics
+                        </button>
+                        <button class="btn btn-secondary">
+                            <span class="btn-icon">&#x1f4c5;</span> Schedule Content
+                        </button>
+                        <button class="btn btn-secondary">
+                            <span class="btn-icon">&#x1f504;</span> Refresh Videos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Scopes -->
+                <div class="card">
+                    <h3>API Permissions</h3>
+                    <div style="font-size: 0.85em; color: #666; line-height: 1.8;">
+                        <div><span style="color: #4caf50;">&#x2713;</span> user.info.basic</div>
+                        <div><span style="color: #4caf50;">&#x2713;</span> video.list</div>
+                        <div><span style="color: #4caf50;">&#x2713;</span> video.upload</div>
+                        <div><span style="color: #4caf50;">&#x2713;</span> video.publish</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main">
+                <!-- Upload Zone -->
+                <div class="card" id="upload-card">
+                    <div class="upload-zone" id="upload-zone" onclick="showUpload()">
+                        <div class="upload-icon">&#x1f3ac;</div>
+                        <div class="upload-title">Upload Travel Video</div>
+                        <div class="upload-hint">Drag and drop your video here, or click to browse<br>MP4, MOV — up to 500MB</div>
+                    </div>
+                    <div class="upload-form" id="upload-form">
+                        <div class="file-selected">
+                            <span class="file-icon">&#x1f3ac;</span>
+                            <div>
+                                <div class="file-name">santorini_sunset_walk.mp4</div>
+                                <div class="file-size">48.2 MB — 00:01:32</div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label>Caption</label>
+                            <textarea placeholder="Write a caption for your travel video...">Sunset walk through Santorini's iconic blue-domed streets. Pure magic. #santorini #greece #travel #sunset #wanderlust</textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Destination</label>
+                                <input type="text" value="Santorini, Greece">
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select>
+                                    <option selected>Destination Highlight</option>
+                                    <option>Travel Tips</option>
+                                    <option>Hidden Gem</option>
+                                    <option>Food & Culture</option>
+                                    <option>Adventure</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Visibility</label>
+                                <select>
+                                    <option selected>Public</option>
+                                    <option>Friends Only</option>
+                                    <option>Private</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Schedule</label>
+                                <input type="datetime-local" value="2026-03-24T18:00">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary btn-upload" onclick="publishVideo()">
+                                <span class="btn-icon">&#x1f680;</span> Publish to TikTok
+                            </button>
+                            <button class="btn btn-secondary" style="flex-shrink: 0;" onclick="hideUpload()">Cancel</button>
+                        </div>
+                        <div id="publish-status" style="display:none; margin-top: 15px; padding: 12px; background: #e8f5e9; color: #2e7d32; border-radius: 8px; text-align: center; font-weight: 500;">
+                            &#x2713; Video uploaded and published successfully!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Library -->
+                <div class="card">
+                    <div class="video-list-header">
+                        <h2>Published Videos</h2>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active">All</button>
+                            <button class="filter-tab">Published</button>
+                            <button class="filter-tab">Scheduled</button>
+                            <button class="filter-tab">Drafts</button>
+                        </div>
+                    </div>
+                    <div class="video-grid">
+                        <div class="video-card">
+                            <div class="video-thumb">
+                                <div class="thumb-img thumb-bali">&#x1f334;</div>
+                                <span class="duration">0:58</span>
+                            </div>
+                            <div class="video-details">
+                                <div class="video-title">Hidden rice terraces of Bali you need to see</div>
+                                <div class="video-meta">Mar 20, 2026</div>
+                                <div class="video-stats">
+                                    <span>&#x25b6; 12.3K</span>
+                                    <span>&#x2764; 892</span>
+                                    <span>&#x1f4ac; 47</span>
+                                </div>
+                                <span class="video-status status-published">Published</span>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumb">
+                                <div class="thumb-img thumb-kyoto">&#x26e9;</div>
+                                <span class="duration">1:24</span>
+                            </div>
+                            <div class="video-details">
+                                <div class="video-title">Cherry blossom season in Kyoto — a dream</div>
+                                <div class="video-meta">Mar 18, 2026</div>
+                                <div class="video-stats">
+                                    <span>&#x25b6; 28.1K</span>
+                                    <span>&#x2764; 2.1K</span>
+                                    <span>&#x1f4ac; 134</span>
+                                </div>
+                                <span class="video-status status-published">Published</span>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumb">
+                                <div class="thumb-img thumb-swiss">&#x1f3d4;</div>
+                                <span class="duration">1:45</span>
+                            </div>
+                            <div class="video-details">
+                                <div class="video-title">Swiss Alps train ride through paradise</div>
+                                <div class="video-meta">Mar 15, 2026</div>
+                                <div class="video-stats">
+                                    <span>&#x25b6; 45.7K</span>
+                                    <span>&#x2764; 3.8K</span>
+                                    <span>&#x1f4ac; 256</span>
+                                </div>
+                                <span class="video-status status-published">Published</span>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumb">
+                                <div class="thumb-img thumb-iceland">&#x1f30b;</div>
+                                <span class="duration">2:10</span>
+                            </div>
+                            <div class="video-details">
+                                <div class="video-title">Iceland's northern lights — jaw dropping</div>
+                                <div class="video-meta">Mar 25, 2026</div>
+                                <div class="video-stats">
+                                    <span>—</span>
+                                </div>
+                                <span class="video-status status-scheduled">Scheduled</span>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumb">
+                                <div class="thumb-img thumb-morocco">&#x1f3dc;</div>
+                                <span class="duration">1:12</span>
+                            </div>
+                            <div class="video-details">
+                                <div class="video-title">Getting lost in the souks of Marrakech</div>
+                                <div class="video-meta">Mar 12, 2026</div>
+                                <div class="video-stats">
+                                    <span>&#x25b6; 19.5K</span>
+                                    <span>&#x2764; 1.4K</span>
+                                    <span>&#x1f4ac; 89</span>
+                                </div>
+                                <span class="video-status status-published">Published</span>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumb">
+                                <div class="thumb-img thumb-nz">&#x1f30a;</div>
+                                <span class="duration">1:38</span>
+                            </div>
+                            <div class="video-details">
+                                <div class="video-title">New Zealand — Middle Earth is real</div>
+                                <div class="video-meta">Draft</div>
+                                <div class="video-stats">
+                                    <span>—</span>
+                                </div>
+                                <span class="video-status status-draft">Draft</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showUpload() {
+            document.getElementById('upload-zone').style.display = 'none';
+            document.getElementById('upload-form').classList.add('visible');
+            document.getElementById('publish-status').style.display = 'none';
+        }
+        function hideUpload() {
+            document.getElementById('upload-zone').style.display = '';
+            document.getElementById('upload-form').classList.remove('visible');
+        }
+        function publishVideo() {
+            var btn = document.querySelector('.btn-upload');
+            btn.innerHTML = '<span class="btn-icon">&#x23f3;</span> Uploading...';
+            btn.disabled = true;
+            setTimeout(function() {
+                btn.innerHTML = '<span class="btn-icon">&#x1f4e4;</span> Publishing...';
+                setTimeout(function() {
+                    btn.innerHTML = '<span class="btn-icon">&#x2713;</span> Published!';
+                    btn.style.background = '#4caf50';
+                    document.getElementById('publish-status').style.display = 'block';
+                    setTimeout(function() {
+                        btn.innerHTML = '<span class="btn-icon">&#x1f680;</span> Publish to TikTok';
+                        btn.style.background = '';
+                        btn.disabled = false;
+                    }, 3000);
+                }, 1500);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
