@@ -161,8 +161,15 @@
             </div>
         </div>
 
+        <!-- Empty State -->
+        <div class="card" id="empty-state" style="text-align: center; padding: 60px 24px;">
+            <div style="font-size: 3em; margin-bottom: 15px;">&#x1f30d;</div>
+            <h2 style="font-size: 1.3em; color: #1a1a2e; margin-bottom: 8px;">Discover Trending Destinations</h2>
+            <p style="color: #888; max-width: 500px; margin: 0 auto; line-height: 1.6;">Search for travel content across TikTok to find trending destinations, popular creators, and content ideas for your next video.</p>
+        </div>
+
         <!-- Trending Destinations -->
-        <div class="card">
+        <div class="card hidden-section" style="display:none;">
             <h3>Trending Travel Topics</h3>
             <div class="trending-bar">
                 <div class="trending-item"><span class="trending-num">1</span> <span class="trend-icon">&#x1f3d6;</span> Hidden Beaches</div>
@@ -177,7 +184,7 @@
         </div>
 
         <!-- Search Insights -->
-        <div class="card">
+        <div class="card hidden-section" style="display:none;">
             <h3>Search Insights — "hidden beaches Southeast Asia"</h3>
             <div class="insights-grid">
                 <div class="insight-card">
@@ -204,7 +211,7 @@
         </div>
 
         <!-- Results -->
-        <div class="card">
+        <div class="card hidden-section" style="display:none;">
             <div class="results-header">
                 <div class="results-count">Showing <strong>8</strong> of <strong>847</strong> results for "hidden beaches Southeast Asia"</div>
             </div>
@@ -424,6 +431,13 @@
             setTimeout(function() {
                 btn.innerHTML = '&#x2713; 847 results';
                 btn.style.background = '#4caf50';
+                // Hide empty state, show results
+                var empty = document.getElementById('empty-state');
+                if (empty) empty.style.display = 'none';
+                var sections = document.querySelectorAll('.hidden-section');
+                for (var i = 0; i < sections.length; i++) {
+                    sections[i].style.display = '';
+                }
                 setTimeout(function() {
                     btn.innerHTML = original;
                     btn.style.background = '';
