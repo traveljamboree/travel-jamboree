@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Research — Travel Jamboree</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background: #f0f2f5; }
+
+        /* Nav */
+        nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 30px; background: #1a1a2e; color: white; }
+        nav .brand { font-size: 1.3em; font-weight: 700; }
+        nav .brand span { opacity: 0.7; font-weight: 400; font-size: 0.8em; margin-left: 10px; }
+        nav .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; margin-left: 25px; font-size: 0.95em; }
+        nav .nav-links a:hover { color: white; }
+        nav .nav-links a.active { color: white; border-bottom: 2px solid #4ecdc4; padding-bottom: 2px; }
+
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+        .page-header { margin-bottom: 25px; }
+        .page-header h1 { font-size: 1.6em; color: #1a1a2e; }
+        .page-header p { color: #666; margin-top: 5px; }
+
+        .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .card h3 { font-size: 1em; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+
+        /* Search Bar */
+        .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-input { flex: 1; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1em; font-family: inherit; transition: border-color 0.2s; }
+        .search-input:focus { outline: none; border-color: #fe2c55; }
+        .search-btn { padding: 14px 28px; background: linear-gradient(135deg, #fe2c55, #d62848); color: white; border: none; border-radius: 10px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .search-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(254,44,85,0.3); }
+
+        /* Filters */
+        .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .filter-group { display: flex; align-items: center; gap: 6px; }
+        .filter-group label { font-size: 0.85em; color: #666; font-weight: 500; }
+        .filter-group select, .filter-group input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85em; font-family: inherit; }
+        .filter-tag { padding: 6px 14px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 0.85em; cursor: pointer; transition: all 0.2s; }
+        .filter-tag.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+        .filter-tag:hover { border-color: #fe2c55; }
+
+        /* Results Header */
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+        .results-count { font-size: 0.95em; color: #666; }
+        .results-count strong { color: #333; }
+        .sort-select { padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.85em; }
+
+        /* Result Cards */
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+        .result-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .result-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .result-thumb { position: relative; padding-top: 56.25%; }
+        .result-thumb .thumb-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3em; }
+        .result-thumb .duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.75); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; }
+        .result-thumb .views-overlay { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.75); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; display: flex; align-items: center; gap: 4px; }
+        .result-body { padding: 14px; }
+        .result-title { font-weight: 600; font-size: 0.95em; margin-bottom: 6px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .result-creator { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .creator-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em; font-weight: 700; }
+        .creator-name { font-size: 0.85em; color: #666; }
+        .creator-verified { color: #20d5ec; font-size: 0.9em; }
+        .result-stats { display: flex; gap: 14px; color: #888; font-size: 0.8em; }
+        .result-stats span { display: flex; align-items: center; gap: 3px; }
+        .result-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+        .result-tag { padding: 3px 10px; background: #f0f2f5; border-radius: 12px; font-size: 0.75em; color: #555; }
+
+        /* Gradient backgrounds for thumbnails */
+        .bg-1 { background: linear-gradient(135deg, #43cea2, #185a9d); }
+        .bg-2 { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .bg-3 { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .bg-4 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .bg-5 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .bg-6 { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .bg-7 { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+        .bg-8 { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+
+        /* Trending Section */
+        .trending-bar { display: flex; gap: 10px; overflow-x: auto; padding: 5px 0; margin-bottom: 5px; }
+        .trending-item { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: #f8f9fa; border-radius: 20px; white-space: nowrap; font-size: 0.85em; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+        .trending-item:hover { background: #e8e8e8; }
+        .trending-item .trend-icon { font-size: 1.1em; }
+        .trending-num { font-weight: 700; color: #fe2c55; font-size: 0.8em; min-width: 18px; }
+
+        /* Insights Panel */
+        .insights-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .insight-card { text-align: center; padding: 18px 12px; background: #f8f9fa; border-radius: 10px; }
+        .insight-card .insight-num { font-size: 1.5em; font-weight: 700; color: #1a1a2e; }
+        .insight-card .insight-label { font-size: 0.78em; color: #888; text-transform: uppercase; margin-top: 4px; }
+        .insight-card .insight-trend { font-size: 0.8em; margin-top: 4px; }
+        .trend-up { color: #4caf50; }
+        .trend-down { color: #f44336; }
+
+        /* Scope badge */
+        .scope-badge { display: inline-flex; align-items: center; gap: 5px; background: #e3f2fd; color: #1565c0; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 500; margin-left: 10px; }
+
+        @media (max-width: 768px) {
+            .result-grid { grid-template-columns: 1fr; }
+            .insights-grid { grid-template-columns: repeat(2, 1fr); }
+            .filters { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="brand">Travel Jamboree <span>Content Manager</span></div>
+        <div class="nav-links">
+            <a href="/travel-jamboree/">Home</a>
+            <a href="/travel-jamboree/dashboard">Dashboard</a>
+            <a href="/travel-jamboree/research" class="active">Research</a>
+            <a href="/travel-jamboree/terms">Terms</a>
+            <a href="/travel-jamboree/privacy">Privacy</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Destination Research <span class="scope-badge">&#x1f50d; research.adlib.basic</span></h1>
+            <p>Discover trending travel content and popular destinations to inform your next video</p>
+        </div>
+
+        <!-- Search -->
+        <div class="card">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="search-input" placeholder="Search travel content — destinations, activities, experiences..." value="hidden beaches Southeast Asia">
+                <button class="search-btn" onclick="doSearch()">&#x1f50d; Search TikTok</button>
+            </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Region:</label>
+                    <select>
+                        <option>All Regions</option>
+                        <option selected>Southeast Asia</option>
+                        <option>Europe</option>
+                        <option>South America</option>
+                        <option>Africa</option>
+                        <option>East Asia</option>
+                        <option>Middle East</option>
+                        <option>Oceania</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Time:</label>
+                    <select>
+                        <option>All Time</option>
+                        <option selected>Last 30 days</option>
+                        <option>Last 7 days</option>
+                        <option>Last 24 hours</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Sort:</label>
+                    <select>
+                        <option selected>Most Viewed</option>
+                        <option>Most Liked</option>
+                        <option>Most Recent</option>
+                        <option>Most Commented</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending Destinations -->
+        <div class="card">
+            <h3>Trending Travel Topics</h3>
+            <div class="trending-bar">
+                <div class="trending-item"><span class="trending-num">1</span> <span class="trend-icon">&#x1f3d6;</span> Hidden Beaches</div>
+                <div class="trending-item"><span class="trending-num">2</span> <span class="trend-icon">&#x1f37c;</span> Street Food Tours</div>
+                <div class="trending-item"><span class="trending-num">3</span> <span class="trend-icon">&#x1f3d4;</span> Mountain Hiking</div>
+                <div class="trending-item"><span class="trending-num">4</span> <span class="trend-icon">&#x1f3db;</span> Ancient Temples</div>
+                <div class="trending-item"><span class="trending-num">5</span> <span class="trend-icon">&#x1f30a;</span> Island Hopping</div>
+                <div class="trending-item"><span class="trending-num">6</span> <span class="trend-icon">&#x1f305;</span> Sunrise Spots</div>
+                <div class="trending-item"><span class="trending-num">7</span> <span class="trend-icon">&#x1f6f6;</span> River Cruises</div>
+                <div class="trending-item"><span class="trending-num">8</span> <span class="trend-icon">&#x1f3d5;</span> Eco Lodges</div>
+            </div>
+        </div>
+
+        <!-- Search Insights -->
+        <div class="card">
+            <h3>Search Insights — "hidden beaches Southeast Asia"</h3>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-num">2.4M</div>
+                    <div class="insight-label">Total Views</div>
+                    <div class="insight-trend trend-up">&#x2191; 34% vs last month</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-num">847</div>
+                    <div class="insight-label">Videos Found</div>
+                    <div class="insight-trend trend-up">&#x2191; 12% vs last month</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-num">156K</div>
+                    <div class="insight-label">Avg. Engagement</div>
+                    <div class="insight-trend trend-up">&#x2191; 8% vs last month</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-num">4.2%</div>
+                    <div class="insight-label">Engagement Rate</div>
+                    <div class="insight-trend trend-down">&#x2193; 2% vs last month</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="card">
+            <div class="results-header">
+                <div class="results-count">Showing <strong>8</strong> of <strong>847</strong> results for "hidden beaches Southeast Asia"</div>
+            </div>
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-5">&#x1f3d6;</div>
+                        <span class="duration">0:47</span>
+                        <span class="views-overlay">&#x25b6; 1.2M</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">This beach in the Philippines has NO tourists and it's absolutely stunning</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#fe2c55;">AS</div>
+                            <span class="creator-name">@asiatraveler</span>
+                            <span class="creator-verified">&#x2713;</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 89.2K</span>
+                            <span>&#x1f4ac; 1.2K</span>
+                            <span>&#x1f4e4; 34.5K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#hiddenbeach</span>
+                            <span class="result-tag">#philippines</span>
+                            <span class="result-tag">#palawan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-1">&#x1f30a;</div>
+                        <span class="duration">1:02</span>
+                        <span class="views-overlay">&#x25b6; 845K</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">Secret beach in Thailand that locals don't want you to know about</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#4facfe;">WN</div>
+                            <span class="creator-name">@wandernomad</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 67.8K</span>
+                            <span>&#x1f4ac; 892</span>
+                            <span>&#x1f4e4; 21.3K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#thailand</span>
+                            <span class="result-tag">#secretbeach</span>
+                            <span class="result-tag">#krabi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-6">&#x2600;</div>
+                        <span class="duration">0:34</span>
+                        <span class="views-overlay">&#x25b6; 623K</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">Bali beach you can only reach by climbing through a cave</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#43cea2;">BV</div>
+                            <span class="creator-name">@balivoyager</span>
+                            <span class="creator-verified">&#x2713;</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 52.1K</span>
+                            <span>&#x1f4ac; 743</span>
+                            <span>&#x1f4e4; 18.9K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#bali</span>
+                            <span class="result-tag">#hiddenbeach</span>
+                            <span class="result-tag">#indonesia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-3">&#x1f3dd;</div>
+                        <span class="duration">1:18</span>
+                        <span class="views-overlay">&#x25b6; 412K</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">Vietnam's most untouched coastline — Con Dao Islands full guide</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#764ba2;">VE</div>
+                            <span class="creator-name">@vietnamexplorer</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 31.4K</span>
+                            <span>&#x1f4ac; 567</span>
+                            <span>&#x1f4e4; 12.1K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#vietnam</span>
+                            <span class="result-tag">#condao</span>
+                            <span class="result-tag">#island</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-4">&#x1f41a;</div>
+                        <span class="duration">0:55</span>
+                        <span class="views-overlay">&#x25b6; 387K</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">The pink beach of Lombok — yes it's actually pink!</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#f5576c;">IL</div>
+                            <span class="creator-name">@islandlife</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 28.9K</span>
+                            <span>&#x1f4ac; 412</span>
+                            <span>&#x1f4e4; 15.7K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#lombok</span>
+                            <span class="result-tag">#pinkbeach</span>
+                            <span class="result-tag">#indonesia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-2">&#x26f5;</div>
+                        <span class="duration">1:31</span>
+                        <span class="views-overlay">&#x25b6; 298K</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">El Nido lagoons — the most beautiful water I've ever seen</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#ee5a24;">TS</div>
+                            <span class="creator-name">@tropicalsoul</span>
+                            <span class="creator-verified">&#x2713;</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 24.3K</span>
+                            <span>&#x1f4ac; 389</span>
+                            <span>&#x1f4e4; 9.8K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#elnido</span>
+                            <span class="result-tag">#palawan</span>
+                            <span class="result-tag">#lagoon</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-7">&#x1f334;</div>
+                        <span class="duration">0:42</span>
+                        <span class="views-overlay">&#x25b6; 215K</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">Myanmar's forgotten Mergui Archipelago — 800 islands, zero crowds</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#a18cd1;">OT</div>
+                            <span class="creator-name">@offtrail</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 18.7K</span>
+                            <span>&#x1f4ac; 298</span>
+                            <span>&#x1f4e4; 7.2K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#myanmar</span>
+                            <span class="result-tag">#mergui</span>
+                            <span class="result-tag">#offthebeatenpath</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-thumb">
+                        <div class="thumb-bg bg-8">&#x1f305;</div>
+                        <span class="duration">1:05</span>
+                        <span class="views-overlay">&#x25b6; 178K</span>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-title">Cambodia's secret southern coast — Koh Rong Samloem sunrise</div>
+                        <div class="result-creator">
+                            <div class="creator-avatar" style="background:#fcb69f; color:#333;">SR</div>
+                            <span class="creator-name">@sunriseroamer</span>
+                        </div>
+                        <div class="result-stats">
+                            <span>&#x2764; 14.1K</span>
+                            <span>&#x1f4ac; 201</span>
+                            <span>&#x1f4e4; 5.4K</span>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag">#cambodia</span>
+                            <span class="result-tag">#kohrong</span>
+                            <span class="result-tag">#sunrise</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function doSearch() {
+            var btn = document.querySelector('.search-btn');
+            var original = btn.innerHTML;
+            btn.innerHTML = '&#x23f3; Searching...';
+            btn.disabled = true;
+            setTimeout(function() {
+                btn.innerHTML = '&#x2713; 847 results';
+                btn.style.background = '#4caf50';
+                setTimeout(function() {
+                    btn.innerHTML = original;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 2000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
