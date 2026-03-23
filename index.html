@@ -3,39 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Jamboree</title>
+    <title>Travel Jamboree — Explore the World's Most Beautiful Places</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background: #fafafa; }
-        header { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: white; padding: 60px 20px; text-align: center; }
-        header h1 { font-size: 2.5em; margin-bottom: 10px; }
-        header p { font-size: 1.2em; opacity: 0.9; max-width: 600px; margin: 0 auto; }
-        .content { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .content p { line-height: 1.8; margin-bottom: 20px; font-size: 1.1em; }
-        footer { text-align: center; padding: 30px 20px; color: #888; font-size: 0.9em; border-top: 1px solid #eee; margin-top: 40px; }
         a { color: #0f3460; }
-        nav { text-align: center; padding: 20px; background: #fff; border-bottom: 1px solid #eee; }
-        nav a { margin: 0 15px; text-decoration: none; color: #0f3460; font-weight: 500; }
-        nav a:hover { text-decoration: underline; }
+
+        /* Nav */
+        nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 30px; background: #fff; border-bottom: 1px solid #eee; }
+        nav .nav-brand { font-weight: 700; font-size: 1.2em; color: #1a1a2e; text-decoration: none; }
+        nav .nav-links a { margin-left: 20px; text-decoration: none; color: #0f3460; font-weight: 500; font-size: 0.95em; }
+        nav .nav-links a:hover { text-decoration: underline; }
+
+        /* Hero */
+        .hero { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: white; padding: 80px 20px; text-align: center; }
+        .hero h1 { font-size: 3em; margin-bottom: 15px; }
+        .hero p { font-size: 1.3em; opacity: 0.9; max-width: 650px; margin: 0 auto 30px; line-height: 1.6; }
+        .hero-cta { display: inline-block; background: #4ecdc4; color: #1a1a2e; padding: 14px 35px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1.1em; transition: all 0.2s; }
+        .hero-cta:hover { background: #45b7af; transform: translateY(-2px); }
+
+        /* Features */
+        .features { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
+        .features h2 { text-align: center; font-size: 1.8em; margin-bottom: 40px; color: #1a1a2e; }
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .feature-card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; transition: transform 0.2s; }
+        .feature-card:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .feature-icon { font-size: 2.5em; margin-bottom: 15px; }
+        .feature-card h3 { font-size: 1.15em; margin-bottom: 10px; color: #1a1a2e; }
+        .feature-card p { color: #666; line-height: 1.6; font-size: 0.95em; }
+
+        /* Destinations */
+        .destinations { background: #f0f2f5; padding: 60px 20px; }
+        .destinations-inner { max-width: 1100px; margin: 0 auto; }
+        .destinations h2 { text-align: center; font-size: 1.8em; margin-bottom: 40px; color: #1a1a2e; }
+        .dest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .dest-card { border-radius: 12px; overflow: hidden; position: relative; padding-top: 120%; cursor: pointer; transition: transform 0.2s; }
+        .dest-card:hover { transform: scale(1.03); }
+        .dest-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 15px; }
+        .dest-label { background: rgba(0,0,0,0.6); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9em; font-weight: 500; }
+        .bg-bali { background: linear-gradient(135deg, #43cea2, #185a9d); }
+        .bg-kyoto { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .bg-swiss { background: linear-gradient(135deg, #a8e6cf, #3d5a80); }
+        .bg-iceland { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .bg-morocco { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .bg-nz { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .bg-peru { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        .bg-norway { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+
+        /* About */
+        .about { max-width: 800px; margin: 60px auto; padding: 0 20px; text-align: center; }
+        .about h2 { font-size: 1.8em; margin-bottom: 20px; color: #1a1a2e; }
+        .about p { line-height: 1.8; margin-bottom: 20px; font-size: 1.05em; color: #555; }
+
+        /* Social */
+        .social { text-align: center; padding: 40px 20px; background: #f0f2f5; }
+        .social h2 { font-size: 1.5em; margin-bottom: 20px; color: #1a1a2e; }
+        .social-icons { display: flex; justify-content: center; gap: 20px; }
+        .social-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3em; font-weight: 700; text-decoration: none; transition: transform 0.2s; }
+        .social-icon:hover { transform: scale(1.1); }
+
+        /* Footer */
+        footer { background: #1a1a2e; color: rgba(255,255,255,0.7); padding: 40px 20px; }
+        .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
+        .footer-brand h3 { color: white; font-size: 1.3em; margin-bottom: 10px; }
+        .footer-brand p { line-height: 1.6; font-size: 0.9em; }
+        .footer-links h4 { color: white; margin-bottom: 12px; font-size: 0.95em; }
+        .footer-links a { display: block; color: rgba(255,255,255,0.7); text-decoration: none; margin-bottom: 8px; font-size: 0.9em; }
+        .footer-links a:hover { color: #4ecdc4; }
+        .footer-bottom { max-width: 1100px; margin: 30px auto 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; }
+        .footer-bottom a { color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 20px; }
+        .footer-bottom a:hover { color: #4ecdc4; }
+
+        @media (max-width: 768px) {
+            .feature-grid { grid-template-columns: 1fr; }
+            .dest-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-inner { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2em; }
+            nav { flex-direction: column; gap: 10px; }
+        }
     </style>
 </head>
 <body>
     <nav>
-        <a href="/travel-jamboree/">Home</a>
-        <a href="/travel-jamboree/dashboard">Dashboard</a>
-        <a href="/travel-jamboree/terms">Terms of Service</a>
-        <a href="/travel-jamboree/privacy">Privacy Policy</a>
+        <a href="/travel-jamboree/" class="nav-brand">Travel Jamboree</a>
+        <div class="nav-links">
+            <a href="/travel-jamboree/">Home</a>
+            <a href="/travel-jamboree/dashboard">Dashboard</a>
+            <a href="/travel-jamboree/research">Research</a>
+            <a href="/travel-jamboree/terms">Terms of Service</a>
+            <a href="/travel-jamboree/privacy">Privacy Policy</a>
+        </div>
     </nav>
-    <header>
+
+    <div class="hero">
         <h1>Travel Jamboree</h1>
-        <p>Explore the world's most beautiful places. Travel stories, hidden gems, and destinations that inspire adventure.</p>
-    </header>
-    <div class="content">
-        <p>Travel Jamboree brings the world's most breathtaking destinations to your screen. From hidden gems off the beaten path to iconic landmarks, we showcase the beauty of exploration and the joy of discovering new places.</p>
-        <p>Our content inspires wanderlust through stunning visuals, local insights, and authentic travel experiences — reminding you just how extraordinary this world is when you step out and explore it.</p>
+        <p>Discover the world's most breathtaking destinations. Travel stories, hidden gems, and journeys that inspire adventure.</p>
+        <a href="/travel-jamboree/dashboard" class="hero-cta">Explore Our Content</a>
     </div>
+
+    <div class="features">
+        <h2>What We Do</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#x1f3ac;</div>
+                <h3>Destination Videos</h3>
+                <p>Stunning short-form videos showcasing the world's most beautiful places, from famous landmarks to hidden corners only locals know.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#x1f5fa;</div>
+                <h3>Travel Guides</h3>
+                <p>Curated guides with practical tips, best times to visit, local food recommendations, and budget-friendly travel itineraries.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#x1f4f8;</div>
+                <h3>Visual Stories</h3>
+                <p>Immersive photo and video stories that capture the essence of each destination — the people, culture, landscapes, and experiences.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#x1f30d;</div>
+                <h3>Hidden Gems</h3>
+                <p>Off-the-beaten-path destinations that most travelers miss. We explore the roads less traveled to bring you unique experiences.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#x1f374;</div>
+                <h3>Food & Culture</h3>
+                <p>Every destination tells a story through its food. We explore local cuisines, street markets, and the cultural traditions behind each dish.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#x1f3d4;</div>
+                <h3>Adventure Travel</h3>
+                <p>From mountain treks to ocean dives, we document thrilling adventures that push boundaries and create unforgettable memories.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="destinations">
+        <div class="destinations-inner">
+            <h2>Featured Destinations</h2>
+            <div class="dest-grid">
+                <div class="dest-card">
+                    <div class="dest-bg bg-bali"><span class="dest-label">&#x1f334; Bali, Indonesia</span></div>
+                </div>
+                <div class="dest-card">
+                    <div class="dest-bg bg-kyoto"><span class="dest-label">&#x26e9; Kyoto, Japan</span></div>
+                </div>
+                <div class="dest-card">
+                    <div class="dest-bg bg-swiss"><span class="dest-label">&#x1f3d4; Swiss Alps</span></div>
+                </div>
+                <div class="dest-card">
+                    <div class="dest-bg bg-iceland"><span class="dest-label">&#x1f30b; Iceland</span></div>
+                </div>
+                <div class="dest-card">
+                    <div class="dest-bg bg-morocco"><span class="dest-label">&#x1f3dc; Marrakech</span></div>
+                </div>
+                <div class="dest-card">
+                    <div class="dest-bg bg-nz"><span class="dest-label">&#x1f30a; New Zealand</span></div>
+                </div>
+                <div class="dest-card">
+                    <div class="dest-bg bg-peru"><span class="dest-label">&#x1f3db; Machu Picchu</span></div>
+                </div>
+                <div class="dest-card">
+                    <div class="dest-bg bg-norway"><span class="dest-label">&#x1f305; Norway Fjords</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="about">
+        <h2>About Travel Jamboree</h2>
+        <p>Travel Jamboree was born from a simple belief: the world is full of extraordinary places waiting to be discovered. We create travel content that inspires people to explore, experience, and appreciate the beauty of our planet.</p>
+        <p>Through our videos on TikTok, YouTube, and other platforms, we bring destinations to life — sharing not just the sights, but the stories, flavors, and moments that make each place special. Whether it's a sunrise over ancient temples or a hidden beach with crystal-clear water, we're here to remind you just how amazing this world is.</p>
+    </div>
+
+    <div class="social">
+        <h2>Follow Our Journey</h2>
+        <div class="social-icons">
+            <a href="#" class="social-icon" style="background:#fe2c55;" title="TikTok">TT</a>
+            <a href="https://www.youtube.com/@traveljamboree8167" class="social-icon" style="background:#ff0000;" title="YouTube">YT</a>
+            <a href="#" class="social-icon" style="background:#E4405F;" title="Instagram">IG</a>
+            <a href="#" class="social-icon" style="background:#1877F2;" title="Facebook">FB</a>
+        </div>
+    </div>
+
     <footer>
-        &copy; 2026 Travel Jamboree. All rights reserved.
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <h3>Travel Jamboree</h3>
+                <p>Showcasing the world's most stunning travel destinations. Inspiring wanderlust and the joy of exploration since 2024.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Explore</h4>
+                <a href="/travel-jamboree/">Home</a>
+                <a href="/travel-jamboree/dashboard">Content Dashboard</a>
+                <a href="/travel-jamboree/research">Destination Research</a>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <a href="/travel-jamboree/terms">Terms of Service</a>
+                <a href="/travel-jamboree/privacy">Privacy Policy</a>
+                <a href="mailto:traveljamboree@gmail.com">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 Travel Jamboree. All rights reserved.</span>
+            <div>
+                <a href="/travel-jamboree/terms">Terms</a>
+                <a href="/travel-jamboree/privacy">Privacy</a>
+            </div>
+        </div>
     </footer>
 </body>
 </html>
